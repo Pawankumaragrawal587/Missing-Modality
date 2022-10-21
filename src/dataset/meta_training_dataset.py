@@ -19,16 +19,18 @@ from sklearn.model_selection import train_test_split
 
 def split_and_save(modality_complete_ratio):
 	training_data = pd.read_csv('../data/train.csv')
+	prev = modality_complete_ratio
 	if modality_complete_ratio == 100:
-		meta_train = pd.DataFrame()
-		meta_val = training_data
+		# meta_train = pd.DataFrame()
+		# meta_val = training_data
+		modality_complete_ratio = 99.99
 	elif modality_complete_ratio == 0:
-		meta_val = pd.DataFrame()
-		meta_train = training_data
-	else:
-		meta_train, meta_val = train_test_split(training_data, test_size=modality_complete_ratio/100)
-	meta_train.to_csv('../data/'+ 'meta_train_' + str(modality_complete_ratio) + '.csv')
-	meta_val.to_csv('../data/'+ 'meta_val_' + str(modality_complete_ratio) + '.csv')
+		# meta_val = pd.DataFrame()
+		# meta_train = training_data
+		modality_complete_ratio = 0.01
+	meta_train, meta_val = train_test_split(training_data, test_size=modality_complete_ratio/100)
+	meta_train.to_csv('../data/'+ 'meta_train_' + str(prev) + '.csv')
+	meta_val.to_csv('../data/'+ 'meta_val_' + str(prev) + '.csv')
 
 class MetaTrSouMNIST(torch.utils.data.Dataset):
 	"""  soundmnist dataset for meta-learning"""
