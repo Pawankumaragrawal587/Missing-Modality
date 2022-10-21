@@ -60,6 +60,7 @@ def parse_args():
     parser.add_argument('--inner_loop', default = 1, type = int, help='meta_train inner_loop' )
     parser.add_argument('--mc_size', default = 30, type = int, help='MC size for meta-test' )
     parser.add_argument('--vis_device', default='0', type=str, help='set visiable device')
+    parser.add_argument('--modality_complete_ratio', default=10, type=int, help='Fraction of modality complete samples')
 
     args = parser.parse_args()
 
@@ -71,8 +72,8 @@ def main(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # meta-train step dataset     
-    meta_train_dataset = MetaTrSouMNIST(meta_split='mtr')
-    meta_val_dataset = MetaTrSouMNIST(meta_split='mval')
+    meta_train_dataset = MetaTrSouMNIST(meta_split='mtr', modality_complete_ratio=args.modality_complete_ratio)
+    meta_val_dataset = MetaTrSouMNIST(meta_split='mval', modality_complete_ratio=args.modality_complete_ratio)
 
 
     meta_train_loader = DataLoader(meta_train_dataset, batch_size = args.batch_size, shuffle = True,  
@@ -184,8 +185,7 @@ def main(args):
                 best_val_acc = test_image_acc
 
                 torch.set_grad_enabled(True)
-                print('Iteration:[{}/{}], Image-only Test RMSE:{:.6f} ' .format(iterate, args.iterations, best_val_acc))
-                
+                print('Iteration:[{}/{}], Best Test RMSE:{:.6f} ' .format(iterate, args.iterations, best_val_acc))
                 save_ckpt_classifier({'iterate': iterate, 'lr': args.lr, 'state_dict': image_sound_extractor.state_dict(),
                          'optimizer': optimizer_image_sound.state_dict() }, ckpt_dir_path, iteration =  iterate , best_acc = best_val_acc)
                 save_ckpt_inferNet({'iterate': iterate, 'lr': args.lr, 'step': glob_step, 'state_dict': encoder.state_dict(), 

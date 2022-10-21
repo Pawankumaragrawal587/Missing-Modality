@@ -24,7 +24,7 @@ class SoundMNIST(torch.utils.data.Dataset):
 
 		self.user = pd.read_csv('../data/User/embeddings.csv')
 		self.meta = pd.read_csv('../data/Meta/embeddings.csv')
-		self.rating_list = pd.read_csv('../data/Text/u1.test', sep='\t', names=['user_id', 'movie_id', 'rating', 'unix_timestamp'])
+		self.rating_list = pd.read_csv('../data/test.csv')
 
 	def __len__(self):
 		""" Returns size of the dataset

@@ -107,8 +107,8 @@ class InferNetNew(nn.Module):
         self.fc1 = nn.Linear(960, 2180)
         self.fc11 = nn.Linear(960, 2180)
 
-        self.fc2 = nn.Linear(2180, 64)
-        self.fc21 = nn.Linear(2180, 64)
+        self.fc2 = nn.Linear(2180, 256)
+        self.fc21 = nn.Linear(2180, 256)
 
 
 

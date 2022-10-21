@@ -171,9 +171,10 @@ class SoundLenet5New(nn.Module):
         self.img_extractor = extractor1
         self.sound_extractor = extractor2
 
-        self.fc1 = nn.Linear(2180, 64)
-        self.fc_user = nn.Linear(1220, 64)
-        self.fc2 = nn.Linear(128, 1)
+        self.fc1 = nn.Linear(2180, 256)
+        self.fc_user = nn.Linear(1220, 256)
+        self.fc2 = nn.Linear(512, 64)
+        self.fc3 = nn.Linear(64, 1)
         self.dropout = nn.Dropout()
         self.relu = nn.ReLU(inplace=True)
         self.softplus = nn.Softplus()
@@ -241,6 +242,9 @@ class SoundLenet5New(nn.Module):
             x = torch.cat([x, user_embedding], dim=1)
 
             x = self.fc2(x)
+            x = self.relu(x)
+
+            x = self.fc3(x)
             x = self.sigmoid(x)
             return x, f, f1, sound_feature
 
@@ -266,6 +270,9 @@ class SoundLenet5New(nn.Module):
             x = torch.cat([x, user_embedding], dim=1)
 
             x = self.fc2(x)
+            x = self.relu(x)
+
+            x = self.fc3(x)
             x = self.sigmoid(x)
             return x, f, f1, sound_feature
             # return x, sound_feature

@@ -15,21 +15,41 @@ import sys
 sys.path.append("../")
 from utils.wav2mfcc import wav2mfcc 
 
+from sklearn.model_selection import train_test_split
+
+def split_and_save(modality_complete_ratio):
+	training_data = pd.read_csv('../data/train.csv')
+	if modality_complete_ratio == 100:
+		meta_train = pd.DataFrame()
+		meta_val = training_data
+	elif modality_complete_ratio == 0:
+		meta_val = pd.DataFrame()
+		meta_train = training_data
+	else:
+		meta_train, meta_val = train_test_split(training_data, test_size=modality_complete_ratio/100)
+	meta_train.to_csv('../data/'+ 'meta_train_' + str(modality_complete_ratio) + '.csv')
+	meta_val.to_csv('../data/'+ 'meta_val_' + str(modality_complete_ratio) + '.csv')
 
 class MetaTrSouMNIST(torch.utils.data.Dataset):
 	"""  soundmnist dataset for meta-learning"""
 
-	def __init__(self, meta_split='mtr'):
+	def __init__(self, meta_split='mtr', modality_complete_ratio=100):
 
 		self.meta_split = meta_split
 		self.user = pd.read_csv('../data/User/embeddings.csv')
 		self.meta = pd.read_csv('../data/Meta/embeddings.csv')
 
 		if self.meta_split == 'mtr':
-			self.rating_list = pd.read_csv('../data/meta_train.csv')
+			rating_file_path = '../data/'+ 'meta_train_' + str(modality_complete_ratio) + '.csv'
+			if not os.path.exists(rating_file_path):
+				split_and_save(modality_complete_ratio)
+			self.rating_list = pd.read_csv(rating_file_path)
 			
 		elif self.meta_split == 'mval':
-			self.rating_list = pd.read_csv('../data/meta_val.csv')
+			rating_file_path = '../data/'+ 'meta_val_' + str(modality_complete_ratio) + '.csv'
+			if not os.path.exists(rating_file_path):
+				split_and_save(modality_complete_ratio)
+			self.rating_list = pd.read_csv(rating_file_path)
 
 		else:
 			raise ValueError('No such split: %s' % self.meta_split)
