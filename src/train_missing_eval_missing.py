@@ -54,13 +54,13 @@ def parse_args():
     # model related parm
     parser.add_argument('-b', '--batch_size', default = 128, type = int, help='batch size' )
     parser.add_argument('--per_class_num', default = 15 , type = int, help='per_class_num' ) # 15 * 10 = 150 sound data available, total 1500 sound data
-    parser.add_argument('--iterations', default = 11000 , type = int, help='num of epoch' )
+    parser.add_argument('--iterations', default = 20000 , type = int, help='num of epoch' )
     parser.add_argument('--lr', default = 1e-3, type = float, help='initial learning rate' )
     parser.add_argument('--lr_inner', default = 1e-3, type = float, help='initial learning rate' )
     parser.add_argument('--inner_loop', default = 1, type = int, help='meta_train inner_loop' )
     parser.add_argument('--mc_size', default = 30, type = int, help='MC size for meta-test' )
     parser.add_argument('--vis_device', default='0', type=str, help='set visiable device')
-    parser.add_argument('--modality_complete_ratio', default=10, type=int, help='Fraction of modality complete samples')
+    parser.add_argument('--modality_complete_ratio', default=100, type=int, help='Fraction of modality complete samples')
 
     args = parser.parse_args()
 
@@ -165,7 +165,7 @@ def main(args):
         scheduler_image_sound.step()
         scheduler_encoder.step()
 
-        if (iterate) % 1100 == 0 or iterate == args.iterations - 1:
+        if (iterate) % 2000 == 0 or iterate == args.iterations - 1:
             
             test_image_acc = 0.
             for i in range(5):
@@ -181,7 +181,7 @@ def main(args):
         # save best model
         if (iterate ) >= 3300:
             
-            if best_val_acc is None or best_val_acc < test_image_acc:
+            if best_val_acc is None or best_val_acc > test_image_acc:
                 best_val_acc = test_image_acc
 
                 torch.set_grad_enabled(True)
